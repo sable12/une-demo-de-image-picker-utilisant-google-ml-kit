@@ -2,6 +2,15 @@
 
 Petite application Flutter qui extrait le texte contenu dans une image.
 
+## Installation
+ 
+```bash
+git clone https://github.com/sable12/une-demo-de-image-picker-utilisant-google-ml-kit.git
+cd une-demo-de-image-picker-utilisant-google-ml-kit
+flutter pub get
+flutter run
+```
+ 
 ## Utilisation
 
 1. Ouvrez l'app.

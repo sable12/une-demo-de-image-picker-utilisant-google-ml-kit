@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/home_screen.dart';
+import 'screens/vin_scan_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,10 +11,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Text Extractor',
-      home: HomeScreen(),
-      debugShowCheckedModeBanner: false,
+    return MaterialApp(
+      title: 'VIN Scanner',
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF121417),
+        colorSchemeSeed: const Color(0xFF3DDC84),
+        useMaterial3: true,
+      ),
+      home: const VinScanScreen(),
     );
   }
 }

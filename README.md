@@ -37,8 +37,9 @@ lib/
 
 - Précision correcte, mais moins efficace que l'OCR cloud d'Azure Computer Vision API. En contrepartie, l'inférence tourne en local : l'image n'est jamais envoyée à un serveur. La bibliothèque dépend cependant de Google Play Services, qui peut effectuer des appels réseau annexes (mise à jour du modèle, télémétrie) hors de mon contrôle — un modèle self-hosted avec ONNX Runtime éliminerait complètement cette dépendance, au prix d'une précision généralement inférieure à Azure.
 - Fonctionne uniquement pour du texte en alphabet latin (script configuré dans `ocr_service.dart`).
-
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/eec5288a-45d8-42d3-93fb-7cb81ce9c256" />
 <img width="720" height="1600" alt="demo" src="assets/demo_vin.svg" />
+
 
 ## Remarque sur l'image de démonstration
 

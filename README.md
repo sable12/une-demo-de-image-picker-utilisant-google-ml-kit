@@ -39,3 +39,12 @@ lib/
 - Fonctionne uniquement pour du texte en alphabet latin (script configuré dans `ocr_service.dart`).
 
 <img width="720" height="1600" alt="demo" src="https://github.com/user-attachments/assets/37445786-79ab-4892-ad2c-ef7265c8e20b" />
+
+## Remarque sur l'image de démonstration
+
+- L'image présente dans ce dépôt est factice (`assets/demo_vin.svg`) et utilisée uniquement pour la démonstration.  
+- Des tests d'extraction ont également été réalisés sur des images réelles lorsque possible.  
+- L'apparence de l'application dans le dépôt ne correspond pas exactement à la photo ; la photo utilisée pour le développement était un portefeuille (exemple).  
+- L'extraction du VIN à partir d'images test a donné des résultats positifs (VIN détecté avec la logique d'OCR locale).  
+
+ 

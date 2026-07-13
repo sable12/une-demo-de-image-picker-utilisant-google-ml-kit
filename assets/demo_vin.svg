@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1520" viewBox="0 0 360 760">
+  <rect width="100%" height="100%" fill="#0f1112" />
+  <!-- Header -->
+  <text x="20" y="50" fill="#ffffff" font-size="22" font-family="Arial">Scanner VIN</text>
+
+  <!-- Image preview -->
+  <rect x="20" y="70" width="320" height="180" rx="14" ry="14" fill="#1d2126" stroke="#2a2f36" />
+  <rect x="40" y="90" width="280" height="140" rx="8" ry="8" fill="#2a2f36" />
+
+  <!-- buttons -->
+  <rect x="20" y="270" width="150" height="70" rx="12" fill="#121417" stroke="#2a2f36" />
+  <text x="45" y="315" fill="#3ddc84" font-size="14" font-family="Arial">Caméra</text>
+  <rect x="190" y="270" width="150" height="70" rx="12" fill="#121417" stroke="#2a2f36" />
+  <text x="230" y="315" fill="#3ddc84" font-size="14" font-family="Arial">Galerie</text>
+
+  <!-- Detected card -->
+  <rect x="20" y="360" width="320" height="120" rx="14" fill="#12221a" stroke="#2a5f3f" />
+  <text x="40" y="395" fill="#3ddc84" font-size="12" font-family="Arial">VIN DÉTECTÉ</text>
+  <text x="40" y="440" fill="#ffffff" font-size="20" font-family="Arial" font-weight="700">TESTVIN00000000001</text>
+
+  <!-- fake redaction scribbles on preview and VIN area to simulate anonymisation -->
+  <g fill="#e53935" opacity="0.95">
+    <rect x="40" y="100" width="260" height="18" rx="4"/>
+    <rect x="40" y="130" width="220" height="18" rx="4"/>
+    <rect x="40" y="160" width="200" height="18" rx="4"/>
+    <rect x="40" y="420" width="240" height="22" rx="6"/>
+  </g>
+
+  <!-- footer -->
+  <text x="20" y="720" fill="#9aa3ae" font-size="10" font-family="Arial">Image factice pour démonstration — VIN bidon</text>
+</svg>

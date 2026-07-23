@@ -1,0 +1,20 @@
+{
+  "@@locale": "en",
+  "appTitle": "VIN Scanner",
+  "scanVinTitle": "Scan VIN",
+  "language": "Language",
+  "english": "English",
+  "french": "French",
+  "spanish": "Spanish",
+  "takeVinPhoto": "Take a photo of the VIN plate",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "readingVin": "Reading VIN...",
+  "errorPrefix": "Error",
+  "vinCopied": "VIN copied",
+  "copy": "Copy",
+  "vinDetected": "VIN DETECTED",
+  "noValidVinDetected": "No valid VIN detected (17 characters expected). Try again with a sharper framing, or correct it manually below.",
+  "manualVinHint": "Enter VIN manually (17 characters)",
+  "ocrRawTextDebug": "Raw OCR text (debug):"
+}

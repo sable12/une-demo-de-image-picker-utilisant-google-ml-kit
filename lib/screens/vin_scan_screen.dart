@@ -2,8 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_text/l10n/app_localizations.dart';
 
+import '../providers/language_provider.dart';
 import '../services/ocr_service.dart';
 import '../utils/vin_utils.dart';
 
@@ -17,14 +20,14 @@ class _AppColors {
   static const textSecondary = Color(0xFF9AA3AE);
 }
 
-class VinScanScreen extends StatefulWidget {
+class VinScanScreen extends ConsumerStatefulWidget {
   const VinScanScreen({super.key});
 
   @override
-  State<VinScanScreen> createState() => _VinScanScreenState();
+  ConsumerState<VinScanScreen> createState() => _VinScanScreenState();
 }
 
-class _VinScanScreenState extends State<VinScanScreen> {
+class _VinScanScreenState extends ConsumerState<VinScanScreen> {
   final ImagePicker _picker = ImagePicker();
   final OcrService _ocrService = OcrService();
 
@@ -38,6 +41,8 @@ class _VinScanScreenState extends State<VinScanScreen> {
   String? _manualVin;
 
   Future<void> _pickAndExtract(ImageSource source) async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       final XFile? file = await _picker.pickImage(source: source);
       if (file == null) return;
@@ -61,19 +66,21 @@ class _VinScanScreenState extends State<VinScanScreen> {
         _isExtracting = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
-        _errorMessage = 'Erreur : $e';
+        _errorMessage = '${l10n.errorPrefix}: $e';
         _isExtracting = false;
       });
     }
   }
 
   void _copyVin() {
+    final l10n = AppLocalizations.of(context)!;
     if (_detectedVin == null) return;
     Clipboard.setData(ClipboardData(text: _detectedVin!));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('VIN copié')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.vinCopied)));
   }
 
   @override
@@ -85,19 +92,36 @@ class _VinScanScreenState extends State<VinScanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = ref.watch(appLanguageProvider);
+
     return Scaffold(
       backgroundColor: _AppColors.background,
       appBar: AppBar(
         backgroundColor: _AppColors.background,
         elevation: 0,
-        title: const Text(
-          'Scanner VIN',
+        title: Text(
+          l10n.scanVinTitle,
           style: TextStyle(
             color: _AppColors.textPrimary,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
           ),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            initialValue: locale.languageCode,
+            icon: const Icon(Icons.language, color: _AppColors.textPrimary),
+            tooltip: l10n.language,
+            onSelected: (code) =>
+                ref.read(appLanguageProvider.notifier).setLocaleByCode(code),
+            itemBuilder: (context) => [
+              PopupMenuItem(value: 'en', child: Text(l10n.english)),
+              PopupMenuItem(value: 'fr', child: Text(l10n.french)),
+              PopupMenuItem(value: 'es', child: Text(l10n.spanish)),
+            ],
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -109,11 +133,11 @@ class _VinScanScreenState extends State<VinScanScreen> {
               const SizedBox(height: 20),
               _buildActionButtons(),
               const SizedBox(height: 24),
-              if (_isExtracting) _buildLoadingCard(),
+              if (_isExtracting) _buildLoadingCard(l10n),
               if (_errorMessage != null) _buildErrorCard(),
-              if (!_isExtracting && _detectedVin != null) _buildVinCard(),
+              if (!_isExtracting && _detectedVin != null) _buildVinCard(l10n),
               if (!_isExtracting && _detectedVin == null && _rawText != null)
-                _buildNoVinCard(),
+                _buildNoVinCard(l10n),
             ],
           ),
         ),
@@ -122,6 +146,8 @@ class _VinScanScreenState extends State<VinScanScreen> {
   }
 
   Widget _buildImagePreview() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       height: 220,
       decoration: BoxDecoration(
@@ -134,11 +160,14 @@ class _VinScanScreenState extends State<VinScanScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.directions_car_filled_outlined,
-                      color: _AppColors.textSecondary, size: 40),
+                  const Icon(
+                    Icons.directions_car_filled_outlined,
+                    color: _AppColors.textSecondary,
+                    size: 40,
+                  ),
                   const SizedBox(height: 8),
                   Text(
-                    'Photographiez la plaque VIN',
+                    l10n.takeVinPhoto,
                     style: TextStyle(color: _AppColors.textSecondary),
                   ),
                 ],
@@ -146,18 +175,24 @@ class _VinScanScreenState extends State<VinScanScreen> {
             )
           : ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Image.file(File(_pickedFile!.path), fit: BoxFit.cover, width: double.infinity),
+              child: Image.file(
+                File(_pickedFile!.path),
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
             ),
     );
   }
 
   Widget _buildActionButtons() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       children: [
         Expanded(
           child: _ActionButton(
             icon: Icons.camera_alt_outlined,
-            label: 'Caméra',
+            label: l10n.camera,
             onTap: () => _pickAndExtract(ImageSource.camera),
           ),
         ),
@@ -165,7 +200,7 @@ class _VinScanScreenState extends State<VinScanScreen> {
         Expanded(
           child: _ActionButton(
             icon: Icons.photo_library_outlined,
-            label: 'Galerie',
+            label: l10n.gallery,
             onTap: () => _pickAndExtract(ImageSource.gallery),
           ),
         ),
@@ -173,19 +208,25 @@ class _VinScanScreenState extends State<VinScanScreen> {
     );
   }
 
-  Widget _buildLoadingCard() {
-    return const Padding(
+  Widget _buildLoadingCard(AppLocalizations l10n) {
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 18,
             height: 18,
-            child: CircularProgressIndicator(strokeWidth: 2, color: _AppColors.accent),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: _AppColors.accent,
+            ),
           ),
-          SizedBox(width: 10),
-          Text('Lecture du VIN...', style: TextStyle(color: _AppColors.textSecondary)),
+          const SizedBox(width: 10),
+          Text(
+            l10n.readingVin,
+            style: const TextStyle(color: _AppColors.textSecondary),
+          ),
         ],
       ),
     );
@@ -199,11 +240,14 @@ class _VinScanScreenState extends State<VinScanScreen> {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.redAccent.withValues(alpha: 0.4)),
       ),
-      child: Text(_errorMessage!, style: const TextStyle(color: Colors.redAccent)),
+      child: Text(
+        _errorMessage!,
+        style: const TextStyle(color: Colors.redAccent),
+      ),
     );
   }
 
-  Widget _buildNoVinCard() {
+  Widget _buildNoVinCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -214,9 +258,9 @@ class _VinScanScreenState extends State<VinScanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Aucun VIN valide détecté (17 caractères attendus). Réessayez avec un cadrage plus net, ou corrigez manuellement ci-dessous.',
-            style: TextStyle(color: _AppColors.textSecondary),
+          Text(
+            l10n.noValidVinDetected,
+            style: const TextStyle(color: _AppColors.textSecondary),
           ),
           const SizedBox(height: 12),
           TextField(
@@ -229,7 +273,7 @@ class _VinScanScreenState extends State<VinScanScreen> {
             textCapitalization: TextCapitalization.characters,
             maxLength: 17,
             decoration: InputDecoration(
-              hintText: 'Saisir le VIN manuellement (17 caractères)',
+              hintText: l10n.manualVinHint,
               hintStyle: const TextStyle(color: _AppColors.textSecondary),
               counterStyle: const TextStyle(color: _AppColors.textSecondary),
               filled: true,
@@ -253,25 +297,40 @@ class _VinScanScreenState extends State<VinScanScreen> {
                 child: TextButton.icon(
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: _manualVin!));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('VIN copié')),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(l10n.vinCopied)));
                   },
-                  icon: const Icon(Icons.copy, size: 16, color: _AppColors.accent),
-                  label: const Text('Copier', style: TextStyle(color: _AppColors.accent)),
+                  icon: const Icon(
+                    Icons.copy,
+                    size: 16,
+                    color: _AppColors.accent,
+                  ),
+                  label: Text(
+                    l10n.copy,
+                    style: const TextStyle(color: _AppColors.accent),
+                  ),
                 ),
               ),
             ),
           if (_rawText != null) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Texte brut lu par l\'OCR (debug) :',
-              style: TextStyle(color: _AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+            Text(
+              l10n.ocrRawTextDebug,
+              style: const TextStyle(
+                color: _AppColors.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 6),
             SelectableText(
               _rawText!,
-              style: const TextStyle(color: _AppColors.textPrimary, fontFamily: 'monospace', fontSize: 13),
+              style: const TextStyle(
+                color: _AppColors.textPrimary,
+                fontFamily: 'monospace',
+                fontSize: 13,
+              ),
             ),
           ],
         ],
@@ -279,7 +338,7 @@ class _VinScanScreenState extends State<VinScanScreen> {
     );
   }
 
-  Widget _buildVinCard() {
+  Widget _buildVinCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -292,10 +351,14 @@ class _VinScanScreenState extends State<VinScanScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.verified_outlined, color: _AppColors.accent, size: 18),
+              const Icon(
+                Icons.verified_outlined,
+                color: _AppColors.accent,
+                size: 18,
+              ),
               const SizedBox(width: 6),
-              const Text(
-                'VIN DÉTECTÉ',
+              Text(
+                l10n.vinDetected,
                 style: TextStyle(
                   color: _AppColors.accent,
                   fontSize: 12,
@@ -306,8 +369,12 @@ class _VinScanScreenState extends State<VinScanScreen> {
               const Spacer(),
               IconButton(
                 onPressed: _copyVin,
-                icon: const Icon(Icons.copy, color: _AppColors.textSecondary, size: 18),
-                tooltip: 'Copier',
+                icon: const Icon(
+                  Icons.copy,
+                  color: _AppColors.textSecondary,
+                  size: 18,
+                ),
+                tooltip: l10n.copy,
               ),
             ],
           ),
@@ -329,7 +396,11 @@ class _VinScanScreenState extends State<VinScanScreen> {
 }
 
 class _ActionButton extends StatelessWidget {
-  const _ActionButton({required this.icon, required this.label, required this.onTap});
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   final IconData icon;
   final String label;
@@ -353,7 +424,13 @@ class _ActionButton extends StatelessWidget {
             children: [
               Icon(icon, color: _AppColors.accent, size: 22),
               const SizedBox(height: 6),
-              Text(label, style: const TextStyle(color: _AppColors.textPrimary, fontSize: 13)),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: _AppColors.textPrimary,
+                  fontSize: 13,
+                ),
+              ),
             ],
           ),
         ),

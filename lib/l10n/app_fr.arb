@@ -1,0 +1,20 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Scanner VIN",
+  "scanVinTitle": "Scanner VIN",
+  "language": "Langue",
+  "english": "Anglais",
+  "french": "Français",
+  "spanish": "Espagnol",
+  "takeVinPhoto": "Photographiez la plaque VIN",
+  "camera": "Caméra",
+  "gallery": "Galerie",
+  "readingVin": "Lecture du VIN...",
+  "errorPrefix": "Erreur",
+  "vinCopied": "VIN copié",
+  "copy": "Copier",
+  "vinDetected": "VIN DÉTECTÉ",
+  "noValidVinDetected": "Aucun VIN valide détecté (17 caractères attendus). Réessayez avec un cadrage plus net, ou corrigez manuellement ci-dessous.",
+  "manualVinHint": "Saisir le VIN manuellement (17 caractères)",
+  "ocrRawTextDebug": "Texte brut lu par l'OCR (debug) :"
+}
